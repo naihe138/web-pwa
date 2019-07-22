@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>动漫</title>
+  <link rel="apple-touch-icon" href="apple-touch-icon-ihone.png" />
+  <meta name="apple-mobile-web-app-title" content="动漫" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" type="text/css" href="/index.css" />
+</head>
+<body>
+  <h2>动漫图片测试</h2>
+  <ul id="list"></ul>
+  <script src="/index.js"></script>
+  <script>
+    window.onload = function (e) {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+      }
+      Notification.requestPermission().then(r => {
+        if (r === 'granted') {
+          let n = new Notification('允许操作', {
+            body: '呵呵，用户云溪啦'
+          })
+          n.addEventListener('click', () => {
+            n.close()
+            window.open('http://www.baidu.com')
+          })
+        }
+      })
+    }
+  </script>
+</body>
+</html>  
