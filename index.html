@@ -17,22 +17,63 @@
   <ul id="list"></ul>
   <script src="/index.js"></script>
   <script>
-    window.onload = function (e) {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-      }
-      Notification.requestPermission().then(r => {
-        if (r === 'granted') {
-          let n = new Notification('允许操作', {
-            body: '呵呵，用户云溪啦'
-          })
-          n.addEventListener('click', () => {
-            n.close()
-            window.open('http://www.baidu.com')
-          })
-        }
-      })
+    window.onload = async function (e) {
+      let registration = await navigator.serviceWorker.register('./sw.js')
+      // Notification.requestPermission().then(r => {
+      //   if (r === 'granted') {
+      //     let n = new Notification('允许操作', {
+      //       body: '呵呵，用户云溪啦'
+      //     })
+      //     n.addEventListener('click', () => {
+      //       n.close()
+      //       window.open('http://www.baidu.com')
+      //     })
+      //   }
+      // })
+      run(registration)
     }
+    const publicVapidKey = 'BFuifm15L3lIT94Au4FW3pa13rnZyyQ1Th-A0Jha-waGyFv3Ago8gUExGXpAx8vL-vWC0xbC4oVCiPEXlpeKyYA';
+
+    async function run(registration) {
+      console.log('Registering service worker');
+      // const registration = await navigator.serviceWorker.register('/worker.js');
+      console.log('Registered service worker');
+
+      console.log('Registering push');
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+      });
+      console.log('Registered push');
+
+      console.log('Sending push');
+      await fetch('/subscribe', {
+        method: 'POST',
+        body: JSON.stringify(subscription),
+        headers: {
+          'content-type': 'application/json'
+        }
+      });
+      console.log('Sent push');
+    }
+
+
+    // Boilerplate borrowed from https://www.npmjs.com/package/web-push#using-vapid-key-for-applicationserverkey
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
   </script>
 </body>
 </html>  

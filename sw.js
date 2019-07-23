@@ -73,3 +73,12 @@ self.addEventListener('activate', e => {
   )
 })
 
+// 推送
+self.addEventListener('push', ev => {
+  const data = ev.data.json();
+  console.log('Got push', ev);
+  self.registration.showNotification(data.title, {
+    body: 'Hello, World!' + data,
+    icon: 'http://mongoosejs.com/docs/images/mongoose5_62x30_transparent.png'
+  });
+});
